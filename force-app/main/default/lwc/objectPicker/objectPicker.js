@@ -1,8 +1,8 @@
 import { LightningElement, track, wire } from 'lwc';
 //import getfetchObjectNames from '@salesforce/apex/ObjectPickerController.fetchObjectNames';
 //import getfetchObjectNamesFromCache from '@salesforce/apex/ObjectPickerController.fetchObjectNamesFromCache';
-import getfetchObjectNamesUsingGlobalDescribe from '@salesforce/apex/ObjectPickerController.fetchObjectNamesUsingGlobalDescribe';
-//import getfetchObjectNamesUsingGlobalDescribeFromCache from '@salesforce/apex/ObjectPickerController.fetchObjectNamesUsingGlobalDescribeFromCache';
+//import getfetchObjectNamesUsingGlobalDescribe from '@salesforce/apex/ObjectPickerController.fetchObjectNamesUsingGlobalDescribe';
+import getfetchObjectNamesUsingGlobalDescribeFromCache from '@salesforce/apex/ObjectPickerController.fetchObjectNamesUsingGlobalDescribeFromCache';
 
 export default class OrgPicker extends LightningElement {
     @track
@@ -13,7 +13,7 @@ export default class OrgPicker extends LightningElement {
     selectedObject ;
     selectedObjectcache ;
 
-    @wire(getfetchObjectNamesUsingGlobalDescribe)
+    @wire(getfetchObjectNamesUsingGlobalDescribeFromCache)
     wiredObjectNames({ error, data }) {
         if (data) {
             this.objectnames = data;
