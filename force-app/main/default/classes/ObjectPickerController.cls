@@ -1,4 +1,4 @@
-public with sharing class OrgBrowserController {
+public with sharing class ObjectPickerController {
     public static final String CACHE_PARTITION_NAME = 'metadata';
 
     @AuraEnabled(cacheable=true)
@@ -33,7 +33,7 @@ public with sharing class OrgBrowserController {
             ) {
                 objectNames = (List<Options>) orgPartition.get('objectlist');
             } else {
-                List<OrgBrowserController.Options> objectNamesFromSOQL = new List<OrgBrowserController.Options>();
+                List<ObjectPickerController.Options> objectNamesFromSOQL = new List<ObjectPickerController.Options>();
                 for (EntityDefinition obj : [
                     SELECT QualifiedApiName, Label
                     FROM EntityDefinition
@@ -41,7 +41,7 @@ public with sharing class OrgBrowserController {
                     LIMIT 200
                 ]) {
                     objectNamesFromSOQL.add(
-                        new OrgBrowserController.Options(
+                        new ObjectPickerController.Options(
                             obj.Label,
                             obj.QualifiedApiName
                         )
@@ -100,14 +100,14 @@ public with sharing class OrgBrowserController {
                     objectNames = (List<Options>) orgPartition.get('objectlistfromdescribe'
                     );
                 } else {
-                    List<OrgBrowserController.Options> objectNamesViaDescribe = new List<OrgBrowserController.Options>();
+                    List<ObjectPickerController.Options> objectNamesViaDescribe = new List<ObjectPickerController.Options>();
                     // Instantiate partition
                     Map<String, Schema.SObjectType> schemaMap = Schema.getGlobalDescribe();
                     for (String objectName : schemaMap.keySet()) {
                         Schema.DescribeSObjectResult describeResult = schemaMap.get(objectName).getDescribe(SObjectDescribeOptions.DEFERRED);
                         if(describeResult.isQueryable()) {
                             objectNamesViaDescribe.add(
-                                new OrgBrowserController.Options(
+                                new ObjectPickerController.Options(
                                     describeResult
                                         .getLabel(),
                                     objectName

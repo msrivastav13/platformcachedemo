@@ -1,10 +1,10 @@
 import { LightningElement, track, wire } from 'lwc';
-//import getfetchObjectNames from '@salesforce/apex/OrgBrowserController.fetchObjectNames';
-//import getfetchObjectNamesFromCache from '@salesforce/apex/OrgBrowserController.fetchObjectNamesFromCache';
-import getfetchObjectNamesUsingGlobalDescribe from '@salesforce/apex/OrgBrowserController.fetchObjectNamesUsingGlobalDescribe';
-//import getfetchObjectNamesUsingGlobalDescribeFromCache from '@salesforce/apex/OrgBrowserController.fetchObjectNamesUsingGlobalDescribeFromCache';
+//import getfetchObjectNames from '@salesforce/apex/ObjectPickerController.fetchObjectNames';
+//import getfetchObjectNamesFromCache from '@salesforce/apex/ObjectPickerController.fetchObjectNamesFromCache';
+import getfetchObjectNamesUsingGlobalDescribe from '@salesforce/apex/ObjectPickerController.fetchObjectNamesUsingGlobalDescribe';
+//import getfetchObjectNamesUsingGlobalDescribeFromCache from '@salesforce/apex/ObjectPickerController.fetchObjectNamesUsingGlobalDescribeFromCache';
 
-export default class OrgBrowser extends LightningElement {
+export default class OrgPicker extends LightningElement {
     @track
     objectnames;
     @track
