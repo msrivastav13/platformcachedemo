@@ -83,6 +83,8 @@ public with sharing class ObjectPickerController {
             throw new AuraHandledException(e.getMessage());
         }
 
+        objectNames.sort();
+
         return objectNames;
     }
 
@@ -131,7 +133,7 @@ public with sharing class ObjectPickerController {
         return objectNames;
     }
 
-    public class Options {
+    public class Options implements Comparable{
         @AuraEnabled
         public String label { get; set; }
         public String value { get; set; }
@@ -139,6 +141,10 @@ public with sharing class ObjectPickerController {
         public Options(String label, String apiName) {
             this.label = label;
             this.value = value;
+        }
+
+        public Integer compareTo(Object ObjToCompare) {
+            return label.CompareTo(((Options)ObjToCompare).label);
         }
     }
 }
