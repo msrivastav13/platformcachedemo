@@ -1,0 +1,10 @@
+<template>
+
+    <lightning:card title="Org Object Picklist">
+        <select class="slds-select" onchange={handleChange}>
+            <template for:each = {objectnames} for:item="objectname">
+               <option key={objectname.value} value={objectname.value}>{objectname.label}</option>
+            </template>
+       </select>
+    </lightning:card>
+</template>
