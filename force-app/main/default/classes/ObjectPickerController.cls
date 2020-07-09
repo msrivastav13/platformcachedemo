@@ -1,6 +1,17 @@
+/**
+ * @description       : This class has methods that shows how to fetch all objects in org using Describes, Entity Definition(200 rows only)
+                        We use platform cache to showcase the performance gains
+ * @author            : Mohith Shrivastava
+**/
 public with sharing class ObjectPickerController {
+
     public static final String CACHE_PARTITION_NAME = 'metadata';
 
+    /**
+     * @description Gets list of object API name and label for 200 objects using SOQL on EntityDefinition object
+     * @author Mohith Shrivastava
+     * @return List<Options>
+     **/
     @AuraEnabled(cacheable=true)
     public static List<Options> fetchObjectNames() {
         List<Options> objectNames = new List<Options>();
@@ -20,6 +31,12 @@ public with sharing class ObjectPickerController {
     }
 
     @AuraEnabled(cacheable=true)
+    /**
+    * @description Gets list of object API name and label for 200 objects using SOQL on EntityDefinition object.
+                        This method shows how to leverage org cache and use cache builder interface for handling cache misses
+    * @author Mohith Shrivastava 
+    * @return List<Options> 
+    **/
     public static List<Options> fetchObjectNamesFromCache() {
         List<Options> objectNames = new List<Options>();
         // Instantiate partition
@@ -27,32 +44,10 @@ public with sharing class ObjectPickerController {
             Cache.OrgPartition orgPartition = Cache.Org.getPartition(
                 CACHE_PARTITION_NAME
             );
-            if (
-                orgPartition != null &&
-                orgPartition.get(ObjectListCache.class, 'objectlist') != null
-            ) {
-                objectNames = (List<Options>) orgPartition.get('objectlist');
-            } else {
-                List<ObjectPickerController.Options> objectNamesFromSOQL = new List<ObjectPickerController.Options>();
-                for (EntityDefinition obj : [
-                    SELECT QualifiedApiName, Label
-                    FROM EntityDefinition
-                    ORDER BY Label
-                    LIMIT 200
-                ]) {
-                    objectNamesFromSOQL.add(
-                        new ObjectPickerController.Options(
-                            obj.Label,
-                            obj.QualifiedApiName
-                        )
-                    );
-                }
-                orgPartition.put(
-                    'objectlistfromdescribe',
-                    objectNamesFromSOQL,
-                    300,
-                    Cache.Visibility.ALL,
-                    true
+            if (orgPartition != null) {
+                objectNames = (List<Options>) orgPartition.get(
+                    ObjectListCache.class,
+                    'objectlist'
                 );
             }
         } catch (exception e) {
@@ -62,6 +57,11 @@ public with sharing class ObjectPickerController {
         return objectNames;
     }
 
+    /**
+     * @description This method shows how one can fetch all object api names and labels that can be queried using globalDescribe calls.
+     * @author Mohith Shrivastava
+     * @return List<Options>
+     **/
     @AuraEnabled(cacheable=true)
     public static List<Options> fetchObjectNamesUsingGlobalDescribe() {
         List<Options> objectNames = new List<Options>();
@@ -69,13 +69,13 @@ public with sharing class ObjectPickerController {
             // Instantiate partition
             Map<String, Schema.SObjectType> schemaMap = Schema.getGlobalDescribe();
             for (String objectName : schemaMap.keySet()) {
-                Schema.DescribeSObjectResult describeResult = schemaMap.get(objectName).getDescribe(SObjectDescribeOptions.DEFERRED);
-                if(describeResult.isQueryable()) {
+                Schema.DescribeSObjectResult describeResult = schemaMap.get(
+                        objectName
+                    )
+                    .getDescribe(SObjectDescribeOptions.DEFERRED);
+                if (describeResult.isQueryable()) {
                     objectNames.add(
-                        new Options(
-                            describeResult.getLabel(),
-                            objectName
-                        )
+                        new Options(describeResult.getLabel(), objectName)
                     );
                 }
             }
@@ -89,6 +89,12 @@ public with sharing class ObjectPickerController {
     }
 
     @AuraEnabled(cacheable=true)
+    /**
+     * @description This method shows how one can fetch all object api names and labels using globalDescribe calls.
+     * The method shows how to use org cache and handle cache miss and specify TTL
+     * @author Mohith Shrivastava
+     * @return List<Options>
+     **/
     public static List<Options> fetchObjectNamesUsingGlobalDescribeFromCache() {
         List<Options> objectNames = new List<Options>();
         try {
@@ -99,24 +105,27 @@ public with sharing class ObjectPickerController {
             if (orgPartition != null) {
                 // Load from Cache
                 if (orgPartition.get('objectlistfromdescribe') != null) {
-                    objectNames = (List<Options>) orgPartition.get('objectlistfromdescribe'
+                    objectNames = (List<Options>) orgPartition.get(
+                        'objectlistfromdescribe'
                     );
                 } else {
                     List<ObjectPickerController.Options> objectNamesViaDescribe = new List<ObjectPickerController.Options>();
-                    // Instantiate partition
                     Map<String, Schema.SObjectType> schemaMap = Schema.getGlobalDescribe();
                     for (String objectName : schemaMap.keySet()) {
-                        Schema.DescribeSObjectResult describeResult = schemaMap.get(objectName).getDescribe(SObjectDescribeOptions.DEFERRED);
-                        if(describeResult.isQueryable()) {
+                        Schema.DescribeSObjectResult describeResult = schemaMap.get(
+                                objectName
+                            )
+                            .getDescribe(SObjectDescribeOptions.DEFERRED);
+                        if (describeResult.isQueryable()) {
                             objectNamesViaDescribe.add(
                                 new ObjectPickerController.Options(
-                                    describeResult
-                                        .getLabel(),
+                                    describeResult.getLabel(),
                                     objectName
                                 )
                             );
                         }
                     }
+                    // put the values into the org partition
                     orgPartition.put(
                         'objectlistfromdescribe',
                         objectNamesViaDescribe,
@@ -133,7 +142,7 @@ public with sharing class ObjectPickerController {
         return objectNames;
     }
 
-    public class Options implements Comparable{
+    public class Options implements Comparable {
         @AuraEnabled
         public String label { get; set; }
         public String value { get; set; }
@@ -144,7 +153,7 @@ public with sharing class ObjectPickerController {
         }
 
         public Integer compareTo(Object ObjToCompare) {
-            return label.CompareTo(((Options)ObjToCompare).label);
+            return label.CompareTo(((Options) ObjToCompare).label);
         }
     }
 }
