@@ -6,7 +6,7 @@ The component controller `ObjectPickerController.cls` has better CPU time and He
 
 The below table shows comparison of using platform cache vs without any cache for describe calls
 
-Apex Method | CPU Time(Avg) in ms | Heap Size(Avg)
+Apex Method | CPU Time(in ms) | Heap Size
 --- | --- | ---
-**fetchObjectNamesUsingGlobalDescribe** | 1307ms | 80000
-**fetchObjectNamesUsingGlobalDescribeFromCache** | 20ms | 1300
+**fetchObjectNamesUsingGlobalDescribe** | 1307 | 80000
+**fetchObjectNamesUsingGlobalDescribeFromCache** | 20 | 1300
