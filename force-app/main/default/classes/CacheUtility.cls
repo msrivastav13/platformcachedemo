@@ -1,6 +1,6 @@
 /**
  * @description       : A Sample class that shows how to cache data in apex using static variables
- * @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+ * @author            : Mohith Shrivastava
  **/
 
 public with sharing class CacheUtility {
